@@ -8,6 +8,28 @@
 - **Test**: `bun test` (runs all tests)
 - **Single test**: `bun test test/tool/tool.test.ts` (specific test file)
 
+## Shell Tools
+
+### Available Tools
+
+- **bash**: Unix shell command execution (Linux, macOS, Windows with WSL/Git Bash)
+- **pwsh**: PowerShell command execution (cross-platform, requires PowerShell Core)
+
+### Platform Detection & Tool Selection
+
+- Detect platform: `process.platform` (`win32`, `darwin`, `linux`)
+- **Windows**: Prefer `pwsh` for system commands, cmdlets, and Windows-specific tasks
+- **Linux/macOS**: Use `bash` for most commands; use `pwsh` when PowerShell features needed
+- Both tools use the same permission system (`agent.permission.bash`)
+
+### PowerShell Tool
+
+- **Detection**: Auto-detects `pwsh` (PowerShell Core) or falls back to `powershell` on Windows
+- **Syntax**: Use PowerShell cmdlets (e.g., `Get-ChildItem`, `Remove-Item -Path file.txt`)
+- **Aliases**: Common aliases supported (rm→Remove-Item, cp→Copy-Item, etc.)
+- **Permissions**: Dangerous cmdlets (Remove-Item, Invoke-Expression, etc.) require approval
+- **Error Messages**: If PowerShell unavailable, tool returns clear error message
+
 ## Code Style
 
 - **Runtime**: Bun with TypeScript ESM modules

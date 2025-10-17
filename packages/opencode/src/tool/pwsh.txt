@@ -1,0 +1,89 @@
+Executes a given PowerShell command with optional timeout and security measures.
+
+Before executing the command, please follow these steps:
+
+1. Directory Verification:
+   - If the command will create new directories or files, first use the List tool to verify the parent directory exists and is the correct location
+   - For example, before running "New-Item -ItemType Directory -Path foo/bar", first use List to check that "foo" exists and is the intended parent directory
+
+2. Command Execution:
+   - Always quote file paths that contain spaces with double or single quotes
+   - Examples of proper quoting:
+     - Set-Location "C:\Users\name\My Documents" (correct)
+     - Set-Location C:\Users\name\My Documents (incorrect - will fail)
+     - Get-Content "path with spaces/file.txt" (correct)
+     - Get-Content path with spaces/file.txt (incorrect - will fail)
+   - After ensuring proper quoting, execute the command
+   - Capture the output of the command
+
+Usage notes:
+  - The command argument is required
+  - Use PowerShell cmdlet syntax (e.g., Get-ChildItem instead of ls)
+  - PowerShell aliases (ls, rm, cp, mv, mkdir) are supported but cmdlets are preferred for clarity
+  - You can specify an optional timeout in milliseconds (up to 600000ms / 10 minutes). If not specified, commands will timeout after 120000ms (2 minutes)
+  - It is very helpful if you write a clear, concise description of what this command does in 5-10 words
+  - If the output exceeds 30000 characters, output will be truncated before being returned to you
+  - Paths can use forward slashes for cross-platform compatibility (e.g., C:/Users/... works on Windows)
+  - When issuing multiple commands, use the ';' operator to separate them. DO NOT use newlines (newlines are ok in quoted strings)
+  - Try to maintain your current working directory throughout the session by using absolute paths and avoiding usage of Set-Location. You may use Set-Location if the User explicitly requests it
+    <good-example>
+    Get-ChildItem -Path C:/foo/bar/tests
+    </good-example>
+    <bad-example>
+    Set-Location C:/foo/bar; Get-ChildItem tests
+    </bad-example>
+
+PowerShell-Specific Guidance:
+
+1. Cmdlet Structure:
+   - PowerShell cmdlets follow a Verb-Noun pattern (e.g., Get-Process, Set-Location, New-Item)
+   - Use approved verbs: Get, Set, New, Remove, Copy, Move, Test, etc.
+   - Parameters use -ParameterName Value format
+   - Boolean switches don't need values: -Recurse, -Force, -Confirm
+
+2. Common Cmdlets:
+   - File operations: Get-ChildItem, Copy-Item, Move-Item, Remove-Item, New-Item
+   - Content: Get-Content, Set-Content, Add-Content
+   - Testing: Test-Path
+   - Location: Get-Location, Set-Location, Push-Location, Pop-Location
+   - Process: Get-Process, Start-Process, Stop-Process
+   - Format: Format-Table, Format-List, Select-Object
+
+3. Pipeline Usage:
+   - PowerShell uses an object-based pipeline (not text-based like bash)
+   - Use Where-Object to filter: Get-Process | Where-Object { $_.CPU -gt 10 }
+   - Use Select-Object to select properties: Get-ChildItem | Select-Object Name, Length
+   - Use ForEach-Object to iterate: Get-ChildItem | ForEach-Object { $_.FullName }
+
+4. Quoting Rules:
+   - Single quotes: Literal strings (no variable expansion)
+   - Double quotes: String interpolation (variables expand with $var)
+   - Backtick (`): Escape character (not backslash)
+
+5. Path Handling:
+   - Forward slashes work on Windows: C:/Users/... (recommended for cross-platform)
+   - Backslashes need escaping in strings: "C:\\Users\\..." (not recommended)
+   - Use -Path parameter for file paths: Get-ChildItem -Path ./src
+   - Use -LiteralPath for paths with special characters
+
+6. Comparison Operators:
+   - Use -eq, -ne, -gt, -lt, -ge, -le (not ==, !=, >, <)
+   - Use -and, -or, -not (not &&, ||, !)
+   - Use -like, -match for pattern matching
+
+7. Examples:
+   - List files: Get-ChildItem -Path . -Recurse
+   - Filter files: Get-ChildItem -Path . | Where-Object { $_.Length -gt 1MB }
+   - Read file: Get-Content -Path file.txt
+   - Write file: Set-Content -Path file.txt -Value "content"
+   - Create directory: New-Item -ItemType Directory -Path ./new-dir
+   - Remove file: Remove-Item -Path file.txt
+   - Copy file: Copy-Item -Path source.txt -Destination dest.txt
+   - Test path exists: Test-Path -Path file.txt
+   - Run command: Start-Process -FilePath "notepad.exe" -ArgumentList "file.txt"
+
+Important notes:
+  - NEVER use execution policy changes (Set-ExecutionPolicy) as they are blocked for security
+  - Avoid interactive commands (no TTY allocated)
+  - Use -ErrorAction SilentlyContinue to suppress non-critical errors
+  - Use -WhatIf to preview dangerous operations before executing

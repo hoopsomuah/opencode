@@ -4,6 +4,7 @@ import { GlobTool } from "./glob"
 import { GrepTool } from "./grep"
 import { ListTool } from "./ls"
 import { PatchTool } from "./patch"
+import { PwshTool } from "./pwsh"
 import { ReadTool } from "./read"
 import { TaskTool } from "./task"
 import { TodoWriteTool, TodoReadTool } from "./todo"
@@ -77,6 +78,7 @@ export namespace ToolRegistry {
     return [
       InvalidTool,
       BashTool,
+      PwshTool,
       EditTool,
       WebFetchTool,
       GlobTool,
@@ -122,6 +124,7 @@ export namespace ToolRegistry {
     }
     if (agent.permission.bash["*"] === "deny" && Object.keys(agent.permission.bash).length === 1) {
       result["bash"] = false
+      result["pwsh"] = false
     }
     if (agent.permission.webfetch === "deny") {
       result["webfetch"] = false
